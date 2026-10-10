@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+/* Pinned/horizontal scenes only when there is room AND motion is welcome. */
+@custom-variant hz (@media (min-width: 1024px) and (prefers-reduced-motion: no-preference));
+
+@theme {
+  /* The Revive Club — sampled from the facade: cream cladding, plum wordmark, violet V, red columns */
+  --color-cream: #ECE3CE;
+  --color-cream-2: #E2D7BC;
+  --color-maroon: #5C1F1B;
+  --color-maroon-deep: #3D1311;
+  --color-plum: #7A1E4A; /* the REVIVE letters */
+  --color-volt: #8B3DFF; /* the violet speed-lines in the V */
+  --color-ember: #E0312A; /* entrance columns / red room neon */
+  --color-ice: #A8E1F0; /* ice bath */
+  --color-ink: #0F0706; /* warm black */
+  --color-ink-2: #180C0B;
+
+  --font-display: var(--font-archivo), "Arial Black", sans-serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-ink);
+  scroll-padding-top: 72px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  body {
+    overflow-x: clip;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-volt);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+button:not(:disabled),
+[role="button"],
+a[href],
+label[for],
+select {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--color-volt);
+  color: var(--color-cream);
+}
+
+/* Wide, heavy display face — Archivo at its widest, like the letters on the building. */
+@utility font-wide {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  font-variation-settings: "wdth" 125;
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+@utility h-screen-s {
+  height: 100vh;
+  height: 100svh;
+}
+
+@utility min-h-screen-s {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Hollow letters; stroke colour comes from --outline (defaults to faint cream). */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--outline, rgba(236, 227, 206, 0.28));
+}
+
+.vignette {
+  background: radial-gradient(ellipse 80% 75% at 50% 45%, transparent 35%, rgba(15, 7, 6, 0.92) 100%);
+}
+
+/* Film grain over everything — a static noise tile nudged in steps (transform only). */
+.grain {
+  position: fixed;
+  inset: -100%;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");
+  animation: grain 1.2s steps(6) infinite;
+  will-change: transform;
+}
+
+@keyframes grain {
+  0% { transform: translate3d(0, 0, 0); }
+  20% { transform: translate3d(-3%, 2%, 0); }
+  40% { transform: translate3d(2%, -4%, 0); }
+  60% { transform: translate3d(-4%, -1%, 0); }
+  80% { transform: translate3d(3%, 3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* Infinite tickers. The track holds the content twice; -50% lands on an identical frame. */
+.marquee-track {
+  animation: marquee var(--marquee-dur, 28s) linear infinite;
+}
+
+.marquee-track.reverse {
+  animation-direction: reverse;
+}
+
+@keyframes marquee {
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.scroll-tick {
+  animation: tick 2.2s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+}
+
+@keyframes tick {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(200%); }
+}
+
+.live-dot {
+  animation: live 1.6s ease-in-out infinite;
+}
+
+@keyframes live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+/* Neon frames of the studio rooms. */
+.neon {
+  box-shadow:
+    0 0 0 1px currentColor,
+    0 0 18px -2px currentColor,
+    inset 0 0 18px -6px currentColor;
+}
+
+/* Intro elements wait for GSAP (only when JS is present). */
+.js .invisible-pre {
+  visibility: hidden;
+}
+
+@media (max-width: 767px) {
+  .grain {
+    animation: none;
+    opacity: 0.05;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .invisible-pre {
+    visibility: visible;
+  }
+  .grain,
+  .marquee-track,
+  .scroll-tick,
+  .live-dot {
+    animation: none;
+  }
+}
